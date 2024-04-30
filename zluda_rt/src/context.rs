@@ -108,10 +108,22 @@ impl ContextData {
         let compiler_version = comgr
             .version()
             .map_err(|_| RTresult::RT_ERROR_CONTEXT_CREATION_FAILED)?;
-        let mut disk_cache_location =
-            dirs::cache_dir().ok_or(RTresult::RT_ERROR_CONTEXT_CREATION_FAILED)?;
-        disk_cache_location.push("ZLUDA");
-        disk_cache_location.push("OptixCache");
+
+        let disk_cache_location = {
+            if let Some(optix_cache_location_from_env) = std::env::var("ZLUDA_OPTIX_CACHE_DIR").ok() {
+                std::path::PathBuf::from(optix_cache_location_from_env)
+            } else if let Some(disk_cache_location) = std::env::var("ZLUDA_CACHE_DIR").ok() {
+                let mut disk_cache_location = std::path::PathBuf::from(disk_cache_location);
+                disk_cache_location.push("OptixCache");
+                disk_cache_location
+            } else {
+                let mut disk_cache_location = dirs::cache_dir().ok_or(RTresult::RT_ERROR_CONTEXT_CREATION_FAILED)?;
+                disk_cache_location.push("ZLUDA");
+                disk_cache_location.push("OptixCache");
+                disk_cache_location
+            }
+        };
+
         fs::create_dir_all(&disk_cache_location)
             .map_err(|_| RTresult::RT_ERROR_CONTEXT_CREATION_FAILED)?;
         let cache = KernelCache::new(&disk_cache_location)

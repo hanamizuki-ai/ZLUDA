@@ -828,6 +828,7 @@ dependencies = [
  "const_format",
  "cuda_types",
  "goblin",
+ "hex",
  "hip_runtime-sys",
  "itertools",
  "libloading",

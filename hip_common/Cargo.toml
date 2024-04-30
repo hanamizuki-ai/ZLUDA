@@ -18,6 +18,8 @@ rustc-hash = "1.1"
 goblin = { version = "0.5.1", default-features = false, features = ["elf64", "elf32", "endian_fd"] }
 memchr = "2.5.0"
 libloading = "0.8"
+hex = "0.4.3"
 
 [build-dependencies]
 capnpc = "0.17.2"
+

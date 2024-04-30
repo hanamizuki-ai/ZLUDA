@@ -60,4 +60,9 @@ opt-level = 3
 opt-level = 3
 
 [profile.dev.package.xtask]
-opt-level = 2
+opt-level = 3
+
+[profile.release]
+lto = true
+strip = true
+panic = "abort"

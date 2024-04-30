@@ -471,9 +471,22 @@ pub(crate) fn init(flags: u32) -> Result<(), CUresult> {
 }
 
 fn create_default_cache() -> Option<KernelCache> {
-    let mut disk_cache_location = dirs::cache_dir()?;
-    disk_cache_location.push("ZLUDA");
-    disk_cache_location.push("ComputeCache");
+
+    let disk_cache_location = {
+        if let Some(co_cache_location_from_env) = std::env::var("ZLUDA_CO_CACHE_DIR").ok() {
+            std::path::PathBuf::from(co_cache_location_from_env)
+        } else if let Some(disk_cache_location) = std::env::var("ZLUDA_CACHE_DIR").ok() {
+            let mut disk_cache_location = std::path::PathBuf::from(disk_cache_location);
+            disk_cache_location.push("ComputeCache");
+            disk_cache_location
+        } else {
+            let mut disk_cache_location = dirs::cache_dir()?;
+            disk_cache_location.push("ZLUDA");
+            disk_cache_location.push("ComputeCache");
+            disk_cache_location
+        }
+    };
+
     fs::create_dir_all(&disk_cache_location).ok()?;
     KernelCache::new(&disk_cache_location)
 }
