@@ -601,7 +601,7 @@ pub(crate) unsafe fn get_name(name: *mut i8, len: i32, device: i32) -> hipError_
     if result != hipError_t::hipSuccess {
         return result;
     }
-    append_zluda_suffix(name, len);
+    // append_zluda_suffix(name, len);
     hipError_t::hipSuccess
 }
 

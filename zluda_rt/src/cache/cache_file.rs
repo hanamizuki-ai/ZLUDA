@@ -20,10 +20,10 @@ impl KernelRepository {
         )))
     }
 
-    #[cfg(test)]
-    pub(crate) fn new_in_memory() -> std::result::Result<Self, ()> {
-        Ok(Self(hip_common::cache::KernelRepository::new(None)))
-    }
+    // #[cfg(test)]
+    // pub(crate) fn new_in_memory() -> std::result::Result<Self, ()> {
+    //     Ok(Self(hip_common::cache::KernelRepository::new(None)))
+    // }
 
     pub(crate) fn save_program(
         &mut self,

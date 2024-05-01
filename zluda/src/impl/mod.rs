@@ -12,6 +12,8 @@ use std::{
     sync::{atomic::AtomicI32, Once},
 };
 
+use comm_manager::{instances::ProgressBarManager, CommManagerSwitch};
+
 use self::cache::KernelCache;
 
 pub(crate) mod array;
@@ -83,6 +85,8 @@ pub(crate) struct GlobalState {
     pub(crate) comgr: Comgr,
     pub(crate) comgr_version: String,
     pub(crate) zero_buffers: bool,
+
+    pub(crate) progressbar: Option<ProgressBarManager>,
 }
 assert_impl_one!(GlobalState: Sync);
 
@@ -459,6 +463,15 @@ pub(crate) fn init(flags: u32) -> Result<(), CUresult> {
     }
     let kernel_cache = create_default_cache();
     let zero_buffers = hipfix::should_zero_buffers().unwrap_or(false);
+
+    let progress_bar_manager = {
+        if let Some(mut switch) = CommManagerSwitch::new() {
+            ProgressBarManager::from_switch(&mut switch).ok()
+        } else {
+            None
+        }
+    };
+
     GLOBAL_STATE.init(|| GlobalState {
         devices,
         kernel_cache,
@@ -466,6 +479,8 @@ pub(crate) fn init(flags: u32) -> Result<(), CUresult> {
         comgr,
         comgr_version,
         zero_buffers,
+
+        progressbar: progress_bar_manager,
     });
     Ok(())
 }

@@ -56,6 +56,7 @@ fn build_cmake_targets<'a>(
         .define("LLVM_ENABLE_CURL", "OFF")
         .define("LLVM_ENABLE_HTTPLIB", "OFF")
         .define("LLVM_ENABLE_LIBEDIT", "OFF")
+        .define("Python3_EXECUTABLE", "C:\\Users\\synopses0130\\AppData\\Local\\Micromamba\\envs\\ipython\\python.exe")
         .define("LLVM_ENABLE_TERMINFO", "OFF")
         .define("LLVM_BUILD_TOOLS", "OFF")
         .define("LLVM_TARGETS_TO_BUILD", "")

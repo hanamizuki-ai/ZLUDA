@@ -5,6 +5,7 @@
 members = [
     "atiadlxx-sys",
     "comgr",
+    "comm_manager",
     "cuda_base",
     "cuda_types",
     "detours-sys",
@@ -57,9 +58,6 @@ default-members = [
 opt-level = 3
 
 [profile.dev.package.lz4-sys]
-opt-level = 3
-
-[profile.dev.package.xtask]
 opt-level = 3
 
 [profile.release]

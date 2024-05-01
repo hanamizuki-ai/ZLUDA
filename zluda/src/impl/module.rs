@@ -303,6 +303,13 @@ pub(crate) fn link_build_zluda_module(
             return Ok(binary);
         }
     }
+
+    let progress = global_state.progressbar.as_ref().map(|pb| pb.create_progress(None, Some(true), Some(0.0), Some("ZLUDA 正在转译 PTX 模块".to_owned())));
+
+    if let Some(ref progressbar) = progress {
+        progressbar.set_right_text(Some("正在将 PTX 模块解析为 AST (0/3)".to_owned()));
+    }
+
     // Older CUDA applications have no notion of lazy loading
     // and will eager load everything even if the module is unused.
     // For this reason we fallback to empty module since that has potential
@@ -318,6 +325,11 @@ pub(crate) fn link_build_zluda_module(
         })
         .collect::<Result<Vec<_>, _>>()
         .map_err(|_| CUresult::CUDA_ERROR_INVALID_PTX)?;
+
+    if let Some(ref progressbar) = progress {
+        progressbar.set_right_text(Some("正在转换 LLVM 模块 (1/3)".to_owned()))
+    }
+
     let mut llvm_module = ptx::to_llvm_module(compilation_mode, asts);
     if !cfg!(debug_assertions) {
         llvm_module = llvm_module.or_else(|_| {
@@ -329,6 +341,11 @@ pub(crate) fn link_build_zluda_module(
         });
     }
     let llvm_module = llvm_module.map_err(|_| CUresult::CUDA_ERROR_INVALID_PTX)?;
+
+    if let Some(ref progressbar) = progress {
+        progressbar.set_right_text(Some("正在编译到 AMD 显卡架构 (2/3)".to_owned()))
+    }
+
     let binary = global_state
         .comgr
         .compile(
@@ -338,6 +355,11 @@ pub(crate) fn link_build_zluda_module(
             &llvm_module.metadata.to_elf_section(),
         )
         .map_err(comgr_error_to_cuda)?;
+
+    if let Some(ref progressbar) = progress {
+        progressbar.set_right_text(Some("正在将编译结果缓存到硬盘 (3/3)".to_owned()))
+    }
+
     if let Some(ref cache) = global_state.kernel_cache {
         cache.save_program(
             &global_state.comgr_version,
